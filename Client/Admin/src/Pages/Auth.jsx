@@ -16,7 +16,6 @@ function Auth() {
   const handleChange = (e) => {
     setAdminData({ ...adminData, [e.target.name]: e.target.value });
   };
-  console.log(adminData);
   const onSubmit = () => {
     axios
       .post(loginPost, adminData, {

@@ -1,5 +1,6 @@
 const express=require('express')
 const jwt=require('jsonwebtoken')
+const User=require('../modals/userModal')
 module.exports={
     logIn:async(req,res)=>
     {
@@ -19,6 +20,23 @@ module.exports={
             }
         }catch(err){
             res.status(500).json({message:err})
+        }
+    },
+    getUsers:async(req,res)=>{
+        try
+        {
+            const users=await User.find()
+            if(users)
+            {
+                return res.status(200).json({message:'users data',users})
+            }
+            else
+            {
+                return res.status(400).json({err:'no data'})
+            }
+        }
+        catch(err){
+            return res.status(500).json({err})
         }
     }
 }
