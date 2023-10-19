@@ -13,6 +13,10 @@ export const MenuItems = [
       link: "/category",
     },
     {
+      name: "Brand Management",
+      link: "/brand",
+    },
+    {
       name: "Product Managemwnt",
       link: "/products",
     },

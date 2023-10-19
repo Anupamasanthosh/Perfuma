@@ -1,67 +1,86 @@
 import React, { useEffect, useState } from "react";
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import { Button } from "primereact/button";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../../utils/axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toolbar } from "primereact/toolbar";
-import { getUsers } from "../../utils/constants";
-import axios from "../../utils/axios";
-import { useDispatch, useSelector } from "react-redux";
-import { setUsers } from "../../Redux/userReducer";
 import { InputText } from "primereact/inputtext";
-import { classNames } from "primereact/utils";
 import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { blockUser, getUsers, deleteUser } from "../../utils/constants";
+import { editUsers, setUsers } from "../../Redux/userReducer";
+// import primeReact themes
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 function UserDisplay() {
   const [usersInfo, setUsersInfo] = useState();
   const [globalFilter, setGlobalFilter] = useState(null);
   const [user, setuser] = useState();
-  const [submitted, setSubmitted] = useState(false);
-  const [viewDialog, setViewDialog] = useState(false);
+  const [dialog, setDialog] = useState(false);
 
   const token = localStorage.getItem("AdminToken");
   const users = useSelector((state) => state.User.Users);
 
-  const paginatorLeft = <Button label="button" icon="pi pi-refresh" text />;
-  const paginatorRight = <Button label="button" icon="pi pi-download" text />;
-
   const dispatch = useDispatch();
-
+  // setting users on loading
   useEffect(() => {
     axios.get(`${getUsers}?token=${token}`).then((res) => {
       dispatch(setUsers(res.data.users));
       setUsersInfo(users);
     });
-  }, []);
-
-  const onInputChange=(e)=>{
-    setuser({...user,[e.target.name]:e.target.value})
-    console.log(user,'from hehe')
-  }
+  }, [users]);
+  // editing users
+  const editUser = (user) => {
+    axios
+      .post(blockUser, JSON.stringify(user), {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((res) => {
+        dispatch(editUsers(res.data.updatedUser));
+      });
+  };
+  // deleting users
+  const deleteUsers = () => {
+    axios
+      .post(deleteUser, JSON.stringify(user), {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((res) => {
+        if (res.data.updatedUser) {
+          setDialog(false);
+        }
+      });
+  };
+  // delete dialog
+  const confirmDeleteUser = (user) => {
+    setuser(user);
+    setDialog(true);
+  };
+  //block ,ubblock icons
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
         <Button
-          icon="pi pi-pencil"
+          icon={rowData.blocked ? "pi pi-lock" : "pi pi-lock-open"}
           rounded
           outlined
           className="mr-2"
-          onClick={() => editProduct(rowData)}
+          onClick={() => editUser(rowData)}
         />
         <Button
           icon="pi pi-trash"
           rounded
           outlined
           severity="danger"
-          onClick={() => confirmDeleteProduct(rowData)}
+          onClick={() => confirmDeleteUser(rowData)}
         />
       </React.Fragment>
     );
   };
 
+  //search filter
   const rightToolbarTemplate = () => {
     return (
       <span className="p-input-icon-left">
@@ -74,37 +93,28 @@ function UserDisplay() {
       </span>
     );
   };
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          className="p-button-secondary"
-          onClick={() => setViewDialog(true)}
-        />
-        <Button label="Delete" icon="pi pi-trash" severity="danger" />
-      </div>
-    );
-  };
-  const userDialogFooter = (
+
+  //delete user footer
+  const deleteUserDialogFooter = (
     <React.Fragment>
       <Button
-        label="Cancel"
+        label="No"
         icon="pi pi-times"
-        outlined
-        onClick={() => setViewDialog(false)}
+        style={{ color: "black", margin: "3px" }}
+        onClick={() => setDialog(false)}
       />
-      <Button label="Save" icon="pi pi-check" />
+      <Button
+        label="Yes"
+        icon="pi pi-check"
+        style={{ color: "red", margin: "3px" }}
+        onClick={deleteUsers}
+      />
     </React.Fragment>
   );
+
   return (
-    <div className="card mt-5 me-5">
-      <Toolbar
-        className="mb-4"
-        left={leftToolbarTemplate}
-        right={rightToolbarTemplate}
-      ></Toolbar>
+    <div className="card mt-5 ms-5 me-5">
+      <Toolbar className="mb-4" right={rightToolbarTemplate}></Toolbar>
       <DataTable
         value={usersInfo}
         paginator
@@ -114,14 +124,12 @@ function UserDisplay() {
         globalFilter={globalFilter}
         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginatorLeft={paginatorLeft}
-        paginatorRight={paginatorRight}
       >
         <Column field="name" header="Name" style={{ width: "25%" }}></Column>
         <Column field="email" header="Email" style={{ width: "25%" }}></Column>
         <Column
           field="blocked"
-          header="Status"
+          header="Blocked"
           style={{ width: "25%" }}
         ></Column>
         <Column
@@ -131,49 +139,23 @@ function UserDisplay() {
           style={{ minWidth: "12rem" }}
         ></Column>
       </DataTable>
-      {/* add user */}
+      {/* delete user */}
       <Dialog
-        visible={viewDialog}
+        visible={dialog}
         style={{ width: "32rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
-        header="User Details"
+        header="Confirm"
         modal
-        className="p-fluid"
-        onHide={() => setViewDialog(false)}
-        footer={userDialogFooter}
+        footer={deleteUserDialogFooter}
+        onHide={() => setDialog(false)}
       >
-        <div className="field">
-          <label htmlFor="name" className="font-bold">
-            Name
-          </label>
-          <InputText
-            id="name"
-            name="name"
-            onChange={(e) => onInputChange(e)}
-            required
-            autoFocus
-            className={classNames({ "p-invalid": submitted && !user.name })}
-            style={{ padding: "10px", margin: "5px" }}
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle mr-3 "
+            style={{ fontSize: "2rem", color: "red" }}
           />
-          {submitted && !user.name && (
-            <small className="p-error">Name is required.</small>
-          )}
-        </div>
-        <div className="field">
-          <label htmlFor="description" className="font-bold">
-            Email
-          </label>
-          <InputText
-            id="email"
-            name="email"
-            onChange={(e) => onInputChange(e)}
-            required
-            autoFocus
-            style={{ padding: "10px", margin: "5px" }}
-            className={classNames({ "p-invalid": submitted && !user.email })}
-          />
-          {submitted && !user.name && (
-            <small className="p-error">Name is required.</small>
+          {user && (
+            <span className="">Are you sure you want to delete the user</span>
           )}
         </div>
       </Dialog>

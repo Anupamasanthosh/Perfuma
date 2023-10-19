@@ -13,21 +13,19 @@ function Auth() {
   const [userData, setUserData] = useState();
   const [signUp, setSignUp] = useState(false);
 
-  const navigate=useNavigate()
-  const dispatch=useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
   const onSubmit = () => {
     if (signUp) {
-      console.log("heyyy");
       axios
         .post(signUpPost, userData, {
           headers: { "Content-Type": "application/json" },
         })
         .then((res) => {
-          console.log(res);
           if (res.data.user) {
             showToastMessage(res.data.message);
             setSignUp(false);
@@ -39,18 +37,22 @@ function Auth() {
           showToastMessageError(err);
         });
     } else {
-      axios.post(loginPost, userData, {
-        headers: { "Content-Type": "application/json" },
-      }).then((res)=>
-      {
-        localStorage.setItem('token',res.data.token)
-        dispatch(setUser(res.data.userExist))
-        showToastMessage(res.data.message)
-        navigate('/')
-      })
+      axios
+        .post(loginPost, userData, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((res) => {
+          if (res.data.userExist) {
+            localStorage.setItem("token", res.data.token);
+            dispatch(setUser(res.data.userExist));
+            showToastMessage(res.data.message);
+            navigate("/");
+          } else {
+            showToastMessageError(res.data.message);
+          }
+        });
     }
   };
-  
 
   return (
     <div>

@@ -9,10 +9,19 @@ const userSlice = createSlice({
     setUsers: (state, action) => {
       state.Users = action.payload;
     },
-    
+    editUsers: (state, action) => {
+      console.log(action.payload);
+      const updatedUser = action.payload;
+      state.Users = state.Users.map((user) => {
+        if (user._id === updatedUser._id) {
+          return { ...user, ...updatedUser };
+        }
+        return user;
+      });
+    },
   },
 });
 
-export const { setUsers } = userSlice.actions;
+export const { setUsers, editUsers } = userSlice.actions;
 
 export default userSlice.reducer;

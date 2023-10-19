@@ -21,11 +21,11 @@ function User() {
         <Nav menu={MenuItems} handleLogout={handleLogout} />
       </div>
       <div className="flex flex-grow">
-        <div className="w-1/4">
+        <div className="xl:w-1/4">
           <SideNav menu={MenuItems} />
         </div>
-        <div className="w-full xl:w-3/4">
-          <UserDisplay />
+        <div className="w-screen xl:w3/4">
+          <UserDisplay/>
         </div>
       </div>
     </div>

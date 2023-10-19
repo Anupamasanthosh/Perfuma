@@ -33,11 +33,18 @@ module.exports = {
           userExist.password
         );
         if (validPass) {
-          const payload = {
-            email: userExist.email,
-          };
-          const token = jwt.sign(payload,'mysecret')
-          res.status(200).json({ message: "Succesfull", userExist, token });
+          if(userExist.blocked)
+          {
+            res.json({message:'user blocked'})
+          }else
+          {
+            const payload = {
+              email: userExist.email,
+            };
+            const token = jwt.sign(payload,'mysecret')
+            res.status(200).json({ message: "Succesfull", userExist, token });
+          }
+          
         } else {
           res.json({ message: "Invalid credentials" });
         }

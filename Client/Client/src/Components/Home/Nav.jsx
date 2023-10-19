@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 function Nav() {
-  const [token, setToken] = useState(false);
+  const [token, setToken] = useState();
   const [visible, setVisible] = useState(false);
   const [userInfo, setUserInfo] = useState();
 
   const user = useSelector((state) => state.Auth.User);
   useEffect(() => {
     const tk = localStorage.getItem("token");
-    if (tk) {
-      setToken(true);
+    console.log(tk)
+    if (tk!==null) {
+      setToken(tk);
+      console.log(token,'tiken ')
       setUserInfo(user);
     }
+   
   }, [token]);
   const handleLogOut = () => {
     localStorage.clear("token");
@@ -34,7 +37,7 @@ function Nav() {
                 />
               </a>
               <span className="italic text-gray-500  hover:text-black dark:hover:text-black">
-                Perfuma
+                Perfuma 
               </span>
               <div className="hidden md:block">
                 <div className="flex items-baseline ml-10 space-x-4">
@@ -42,7 +45,7 @@ function Nav() {
                     className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
                     href="/#"
                   >
-                    New
+                    New 
                   </a>
                   <a
                     className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
