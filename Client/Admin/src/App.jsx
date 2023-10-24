@@ -11,6 +11,7 @@ import PrivateRoute from "./utils/PrivateRoutes";
 import User from "./Pages/User";
 import Category from "./Pages/Category";
 import Brand from "./Pages/Brand";
+import Products from "./Pages/Products";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/category" element={<Category/>}/>
             <Route path="/brand" element={<Brand />} />
+            <Route path="/products" element={<Products />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -2,6 +2,9 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../modals/userModal");
 const Category = require("../modals/categoryModal");
+const Brand = require("../modals/brandModal");
+const Product=require('../modals/productModal')
+const mongoose = require("mongoose");
 module.exports = {
   logIn: async (req, res) => {
     try {
@@ -76,7 +79,6 @@ module.exports = {
   },
   addCategory: async (req, res) => {
     try {
-      console.log("heooooo");
       const categoryExist = await Category.findOne({
         name: { $regex: new RegExp(`^${req.body.name}$`, "i") },
       });
@@ -90,14 +92,18 @@ module.exports = {
             image: req.file.path,
           })
             .then((cat) => {
+              console.log(cat)
               return res.status(200).json({ message: "Category Added", cat });
             })
             .catch((err) => {
+              console.log(err)
               return res.status(500).json({ message: "Somwthing happend" });
             });
         }
       }
-    } catch {}
+    } catch(err) {
+      console.log(err)
+    }
   },
   getCategory: async (req, res) => {
     try {
@@ -113,41 +119,221 @@ module.exports = {
   },
   editCategory: async (req, res) => {
     try {
-      const id=req.body.id
-        const UpdatedCategory = await Category.findById({_id:id});
-        if (!UpdatedCategory) {
-          return res.status(400).json({ message: "no data" });
-        }
-        UpdatedCategory.name = req.body.name;
-        UpdatedCategory.description = req.body.des;
-        if (req.file) {
-          UpdatedCategory.image = req.file.path;
-        }
-        const newCat = await UpdatedCategory.save();
-        return res.status(200).json({ message: "updated", newCat });
-
-    } catch(err) {
-      console.log(err)
-      return res.status(500).json({ message: "something went wrong" ,err});
+      const id = req.body.id;
+      const UpdatedCategory = await Category.findById({ _id: id });
+      if (!UpdatedCategory) {
+        return res.status(400).json({ message: "no data" });
+      }
+      UpdatedCategory.name = req.body.name;
+      UpdatedCategory.description = req.body.des;
+      if (req.file) {
+        UpdatedCategory.image = req.file.path;
+      }
+      const newCat = await UpdatedCategory.save();
+      return res.status(200).json({ message: "updated", newCat });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "something went wrong", err });
     }
   },
-  deleteCategory:async(req,res)=>
-  {
+  deleteCategory: async (req, res) => {
+    try {
+      console.log(req.body, "bodyyy");
+      const updatedCat = await Category.findByIdAndDelete({
+        _id: req.body._id,
+      });
+      if (updatedCat) {
+        return res.status(200).json({ message: "Deleted", updatedCat });
+      } else {
+        return res.status(400).json({ message: "not updated" });
+      }
+    } catch {
+      return res.status(500).json({ message: "something went wrong" });
+    }
+  },
+  addBrand: async (req, res) => {
+    try {
+      console.log(req.body);
+      console.log(req.file);
+      const brandExist = await Brand.findOne({
+        name: { $regex: new RegExp(`^${req.body.name}$`, "i") },
+      });
+      if (brandExist) {
+        return res.status(400).json({ message: "Brand already exists" });
+      }
+
+      const categoryName = await Category.findById(req.body.cat);
+      console.log(categoryName, "nameeeeeeee");
+
+      const brandData = {
+        name: req.body.name,
+        description: req.body.des,
+        category: categoryName._id,
+      };
+
+      if (req.file) {
+        brandData.image = req.file.path;
+      }
+
+      const createdBrand = await Brand.create(brandData);
+
+      res.status(200).json({
+        message: "Brand added successfully",
+        newBrand: createdBrand,
+        categoryName,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Error" });
+    }
+  },
+
+  getbrand: async (req, res) => {
+    try {
+      const brands = await Brand.find().populate("category");
+      if (brands) {
+        return res.status(200).json({ message: "brands get", brands });
+      } else {
+        return res.status(400).json({ message: "not get" });
+      }
+    } catch {
+      res.status(500).json({ message: "error" });
+    }
+  },
+  editBrand: async (req, res) => {
+    try {
+      console.log(req.body, "from edit");
+      const id = req.body.id;
+      const updatedBrand = await Brand.findById({ _id: id });
+      if (!updatedBrand) {
+        return res.status(400).json({ message: "not updated" });
+      }
+      const categoryId = req.body.cat;
+      updatedBrand.name = req.body.name;
+      updatedBrand.description = req.body.des;
+      updatedBrand.category = categoryId;
+      if (req.file) {
+        updatedBrand.image = req.file.path;
+      }
+
+      const newBrand = await updatedBrand.save();
+      return res
+        .status(200)
+        .json({ message: "brand edited succesfully", newBrand });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "error" });
+    }
+  },
+  deleteBrand: async (req, res) => {
+    try {
+      const updatedBrand = await Brand.findByIdAndDelete({
+        _id: req.body._id,
+      });
+      if (updatedBrand) {
+        return res.status(200).json({ message: "Deleted", updatedBrand });
+      } else {
+        return res.status(400).json({ message: "not updated" });
+      }
+    } catch (err) {
+      return res.status(500).json({ err: err });
+    }
+  },
+  addproduct:async(req,res)=>{
     try
     {
-      console.log(req.body,'bodyyy')
-      const updatedCat = await Category.findByIdAndDelete({ _id: req.body._id });
-      if(updatedCat)
+      console.log(req.body)
+      console.log(req.files)
+      const productExist=await Product.findOne({name: { $regex: new RegExp(`^${req.body.name}$`, "i") },})
+      if(productExist)
       {
-        return res.status(200).json({message:'Deleted',updatedCat})
+        return res.status(400).json({message:'Product exist'})
+      }
+       
+      const categoryName=await Category.findById(req.body.cat)
+      const brandName=await Brand.findById(req.body.brand)
+      const productData={
+        name:req.body.name,
+        description:req.body.des,
+        category:categoryName._id,
+        brand:brandName._id,
+        stock:req.body.stock
+      }
+      if(req.files)
+      {
+        productData.image = req.files.map(file => file.path);
+      }
+
+      const createProduct=await Product.create(productData)
+      res.status(200).json({
+        message: "Product added successfully",
+        createProduct,
+        categoryName,brandName,
+      });
+    }
+    catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Error" });
+    }
+  },
+  editProduct:async(req,res)=>{
+    try
+    {
+      console.log(req.body,'noooo')
+      const id=req.body.id
+      const updatedProduct=await Product.findById({_id:id})
+      if(!updatedProduct)
+      {
+        return res.status(400).json({ message: "not updated" });
+      }
+      updatedProduct.name=req.body.name
+      updatedProduct.description=req.body.des
+      updatedProduct.category=req.body.cat
+      updatedProduct.brand=req.body.brand
+      updatedProduct.stock=req.body.stock
+      if (req.file) {
+        updatedProduct.image = req.files.map(file => file.path);
+      }
+      const newProduct = await updatedProduct.save();
+      console.log(newProduct)
+      return res
+        .status(200)
+        .json({ message: "brand edited succesfully", newProduct });
+    }
+    catch(err){
+      console.log(err)
+      return res.status(500).json({ message: "error" });
+    }
+  },
+  deleteProduct:async(req,res)=>{
+    try {
+      const updatedProduct = await Product.findByIdAndDelete({
+        _id: req.body._id,
+      });
+      if (updatedProduct) {
+        return res.status(200).json({ message: "Deleted", updatedProduct });
+      } else {
+        return res.status(400).json({ message: "not updated" });
+      }
+    } catch (err) {
+      return res.status(500).json({ err: err });
+    }
+  },
+  getProducts:async(req,res)=>{
+    try
+    {
+      const products=await Product.find().populate("category").populate('brand')
+      if(products)
+      {
+        return res.status(200).json({message:'product get',products})
       }
       else
       {
-        return res.status(400).json({message:'not updated'})
+        res.status(400).json({ message: "not found" });
       }
     }
     catch{
-      return res.status(500).json({message:'something went wrong'})
+      res.status(500).json({ message: "something went wrong" });
     }
   }
 };

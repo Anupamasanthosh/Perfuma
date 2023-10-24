@@ -3,7 +3,7 @@ import React from "react";
 function SideNav({ menu }) {
   return (
 
-      <div className="bg-white dark:bg-white fixed left-0 h-screen w-auto z-20 hidden xl:block border">
+      <div className="bg-white dark:bg-white left-0 h-screen w-auto z-20 hidden xl:block border fixed">
         <div className="flex flex-col sm:flex-row sm:justify-around">
           <div className="h-screen w-auto">
             <nav className="mt-10 px-6 ">

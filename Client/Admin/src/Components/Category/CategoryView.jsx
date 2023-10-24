@@ -52,6 +52,7 @@ function CategoryView() {
     setCategory();
     setCategoryDialog(true);
   };
+
   const handleChange = (e) => {
     setCategory({ ...category, [e.target.name]: e.target.value });
   };
@@ -95,7 +96,6 @@ function CategoryView() {
   };
   const handleSubmit = () => {
     const formData = new FormData();
-    console.log(category);
     formData.append("name", category.name);
     formData.append("des", category.description);
     formData.append("image", file);
@@ -106,6 +106,7 @@ function CategoryView() {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
+          console.log(res)
           if (res.data.cat) {
             setCategoryDialog(false);
             setCatImage();

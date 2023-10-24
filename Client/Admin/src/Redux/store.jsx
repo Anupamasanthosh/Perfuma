@@ -4,8 +4,15 @@ import { persistReducer,persistStore} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import userReducer from './userReducer'
 import categoryReducer from './categoryReducer'
+import brandReducer from './brandReducer'
+import productReducer from './productReducer'
 
-const rootReducer=combineReducers({Auth:adminReducer,User:userReducer,Category:categoryReducer})
+const rootReducer=combineReducers({Auth:adminReducer,
+    User:userReducer,
+    Category:categoryReducer,
+    Brand:brandReducer,
+    Product:productReducer
+})
 
 const persistConfig={
     key:'root',
