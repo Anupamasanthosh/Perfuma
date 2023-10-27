@@ -12,6 +12,8 @@ import { Dialog } from "primereact/dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "../../utils/axios";
 import {
   addProduct,
@@ -20,6 +22,9 @@ import {
   getproducts,
 } from "../../utils/constants";
 import { setProductss } from "../../Redux/productReducer";
+import { showToastMessage, showToastMessageError } from "../../utils/toast";
+import ProductHeader from "./ProductHeader";
+import DataTables from "./DataTables";
 
 function ProductDisplay() {
   const imageRef = useRef();
@@ -37,6 +42,7 @@ function ProductDisplay() {
 
   const token = localStorage.getItem("AdminToken");
   const categories = useSelector((state) => state.Category.Category);
+  const state = useSelector((state) => console.log(state));
   const brands = useSelector((state) => state.Brand.Brand);
   const productinfo = useSelector((state) => state.Product.Products);
   const openNav = () => {
@@ -106,8 +112,11 @@ function ProductDisplay() {
           .then((res) => {
             if (res.data.createProduct) {
               setProductDialog(false);
+              showToastMessage(res.data.message);
               setProductImage();
               setProduct();
+            } else {
+              showToastMessageError(res.data.message);
             }
           });
       } else {
@@ -128,7 +137,10 @@ function ProductDisplay() {
           .then((res) => {
             if (res.data.newProduct) {
               setProductDialog(false);
+              showToastMessage(res.data.message);
               setEdit(false);
+            } else {
+              showToastMessageError(res.data.message);
             }
           });
       }
@@ -184,45 +196,19 @@ function ProductDisplay() {
       </React.Fragment>
     );
   };
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          severity="success"
-          style={{ color: "black", margin: "3px" }}
-          onClick={openNav}
-        />
-        <Button
-          label="Delete"
-          icon="pi pi-trash"
-          style={{ color: "black", margin: "3px" }}
-          severity="danger"
-        />
-      </div>
-    );
-  };
 
-  const rightToolbarTemplate = () => {
-    return (
-      <span className="p-input-icon-left">
-        <InputText
-          className="p-3"
-          type="search"
-          onInput={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search..."
-        />
-      </span>
-    );
-  };
   const deleteProduct = () => {
     axios
       .post(deleteProducts, JSON.stringify(product), {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        setDeleteModal(false);
+        if (res.data.updatedProduct) {
+          setDeleteModal(false);
+          showToastMessage(res.data.message);
+        } else {
+          showToastMessageError(res.data.message);
+        }
       });
   };
   const deleteProductDialogFooter = (
@@ -265,65 +251,15 @@ function ProductDisplay() {
   );
 
   return (
-    <div className="card mt-5 me-5 h-screen overflow-auto">
-      <Toolbar
-        className="mb-4"
-        left={leftToolbarTemplate}
-        right={rightToolbarTemplate}
-      ></Toolbar>
-      <DataTable
-        value={products}
-        dataKey="id"
-        paginator
-        rows={10}
-        rowsPerPageOptions={[5, 10, 25]}
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+    <div className="card mt-5 me-5">
+      <ProductHeader openNav={openNav} />
+      <ToastContainer />
+      <DataTables
+        products={products}
         globalFilter={globalFilter}
-      >
-        <Column
-          field="name"
-          header="Name"
-          sortable
-          style={{ minWidth: "16rem" }}
-        ></Column>
-        <Column
-          header="Image"
-          body={imageBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-        <Column
-          field="category.name"
-          header="Category"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          field="brand.name"
-          header="Brand"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          field="description"
-          header="Description"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          field="stock"
-          header="Stock"
-          sortable
-          style={{ minWidth: "16rem" }}
-        ></Column>
-        <Column
-          header="Action"
-          body={actionBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-      </DataTable>
+        imageBodyTemplate={imageBodyTemplate}
+        actionBodyTemplate={actionBodyTemplate}
+      />
       <Dialog
         visible={productDialog}
         style={{ width: "32rem" }}
@@ -497,7 +433,9 @@ function ProductDisplay() {
             style={{ fontSize: "2rem", color: "red" }}
           />
           {product && (
-            <span className="">Are you sure you want to delete the Product</span>
+            <span className="">
+              Are you sure you want to delete the Product
+            </span>
           )}
         </div>
       </Dialog>

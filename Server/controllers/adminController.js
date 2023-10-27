@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../modals/userModal");
 const Category = require("../modals/categoryModal");
 const Brand = require("../modals/brandModal");
-const Product=require('../modals/productModal')
+const Product = require("../modals/productModal");
 const mongoose = require("mongoose");
 module.exports = {
   logIn: async (req, res) => {
@@ -18,10 +18,10 @@ module.exports = {
         const token = jwt.sign(payload, "mysecret");
         res.status(200).json({ message: "Successfull", token });
       } else {
-        res.status({ error: "Invalid Creddentials" });
+        res.json({ error: "Invalid Creddentials" });
       }
     } catch (err) {
-      res.status(500).json({ message: err });
+      res.status(500).json({ error: err });
     }
   },
   getUsers: async (req, res) => {
@@ -62,7 +62,7 @@ module.exports = {
         res.status(200).json({ message: "blocked", updatedUser });
       }
     } catch (err) {
-      res.status(500).json({ err: "Something went wrong" });
+      res.status(500).json({ message: "Something went wrong" });
     }
   },
   deleteUser: async (req, res) => {
@@ -74,7 +74,7 @@ module.exports = {
         return res.status(400).json({ message: "User not updated" });
       }
     } catch {
-      res.status(500).json({ err: "Something went wrong" });
+      res.status(500).json({ message: "Something went wrong" });
     }
   },
   addCategory: async (req, res) => {
@@ -92,17 +92,17 @@ module.exports = {
             image: req.file.path,
           })
             .then((cat) => {
-              console.log(cat)
+              console.log(cat);
               return res.status(200).json({ message: "Category Added", cat });
             })
             .catch((err) => {
-              console.log(err)
+              console.log(err);
               return res.status(500).json({ message: "Somwthing happend" });
             });
         }
       }
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   },
   getCategory: async (req, res) => {
@@ -143,6 +143,16 @@ module.exports = {
         _id: req.body._id,
       });
       if (updatedCat) {
+        console.log(req.body._id);
+        const productsToDelete = await Product.find({ category: req.body._id });
+        for (const product of productsToDelete) {
+          await Product.findByIdAndDelete(product._id);
+        }
+        const brandsToDelete = await Brand.find({ category: req.body._id });
+        for (const brand of brandsToDelete) {
+          await Brand.findByIdAndDelete(brand._id);
+        }
+
         return res.status(200).json({ message: "Deleted", updatedCat });
       } else {
         return res.status(400).json({ message: "not updated" });
@@ -153,8 +163,6 @@ module.exports = {
   },
   addBrand: async (req, res) => {
     try {
-      console.log(req.body);
-      console.log(req.file);
       const brandExist = await Brand.findOne({
         name: { $regex: new RegExp(`^${req.body.name}$`, "i") },
       });
@@ -163,8 +171,6 @@ module.exports = {
       }
 
       const categoryName = await Category.findById(req.body.cat);
-      console.log(categoryName, "nameeeeeeee");
-
       const brandData = {
         name: req.body.name,
         description: req.body.des,
@@ -178,13 +184,13 @@ module.exports = {
       const createdBrand = await Brand.create(brandData);
 
       res.status(200).json({
-        message: "Brand added successfully",
+        message: "Brand added",
         newBrand: createdBrand,
         categoryName,
       });
     } catch (err) {
       console.log(err);
-      res.status(500).json({ error: "Error" });
+      res.status(500).json({ message: "Error" });
     }
   },
 
@@ -202,9 +208,7 @@ module.exports = {
   },
   editBrand: async (req, res) => {
     try {
-      console.log(req.body, "from edit");
-      const id = req.body.id;
-      const updatedBrand = await Brand.findById({ _id: id });
+      const updatedBrand = await Brand.findById({ _id: req.body.id });
       if (!updatedBrand) {
         return res.status(400).json({ message: "not updated" });
       }
@@ -231,81 +235,82 @@ module.exports = {
         _id: req.body._id,
       });
       if (updatedBrand) {
+        const productsToDelete = await Product.find({ brand: req.body._id });
+        for (const product of productsToDelete) {
+          await Product.findByIdAndDelete(product._id);
+        }
+
         return res.status(200).json({ message: "Deleted", updatedBrand });
       } else {
         return res.status(400).json({ message: "not updated" });
       }
     } catch (err) {
-      return res.status(500).json({ err: err });
+      return res.status(500).json({ message: "something went wrong" });
     }
   },
-  addproduct:async(req,res)=>{
-    try
-    {
-      console.log(req.body)
-      console.log(req.files)
-      const productExist=await Product.findOne({name: { $regex: new RegExp(`^${req.body.name}$`, "i") },})
-      if(productExist)
-      {
-        return res.status(400).json({message:'Product exist'})
-      }
-       
-      const categoryName=await Category.findById(req.body.cat)
-      const brandName=await Brand.findById(req.body.brand)
-      const productData={
-        name:req.body.name,
-        description:req.body.des,
-        category:categoryName._id,
-        brand:brandName._id,
-        stock:req.body.stock
-      }
-      if(req.files)
-      {
-        productData.image = req.files.map(file => file.path);
+  addproduct: async (req, res) => {
+    try {
+      console.log(req.body);
+      console.log(req.files);
+      const productExist = await Product.findOne({
+        name: { $regex: new RegExp(`^${req.body.name}$`, "i") },
+      });
+      if (productExist) {
+        return res.status(400).json({ message: "Product exist" });
       }
 
-      const createProduct=await Product.create(productData)
+      const categoryName = await Category.findById(req.body.cat);
+      const brandName = await Brand.findById(req.body.brand);
+      const productData = {
+        name: req.body.name,
+        description: req.body.des,
+        category: categoryName._id,
+        brand: brandName._id,
+        stock: req.body.stock,
+      };
+      if (req.files) {
+        productData.image = req.files.map((file) => file.path);
+      }
+
+      const createProduct = await Product.create(productData);
       res.status(200).json({
-        message: "Product added successfully",
+        message: "Product added",
         createProduct,
-        categoryName,brandName,
+        categoryName,
+        brandName,
       });
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
-      res.status(500).json({ error: "Error" });
+      res.status(500).json({ message: "Error" });
     }
   },
-  editProduct:async(req,res)=>{
-    try
-    {
-      console.log(req.body,'noooo')
-      const id=req.body.id
-      const updatedProduct=await Product.findById({_id:id})
-      if(!updatedProduct)
-      {
+  editProduct: async (req, res) => {
+    try {
+      console.log(req.body, "noooo");
+      const id = req.body.id;
+      const updatedProduct = await Product.findById({ _id: id });
+      if (!updatedProduct) {
         return res.status(400).json({ message: "not updated" });
       }
-      updatedProduct.name=req.body.name
-      updatedProduct.description=req.body.des
-      updatedProduct.category=req.body.cat
-      updatedProduct.brand=req.body.brand
-      updatedProduct.stock=req.body.stock
+      updatedProduct.name = req.body.name;
+      updatedProduct.description = req.body.des;
+      updatedProduct.category = req.body.cat;
+      updatedProduct.brand = req.body.brand;
+      updatedProduct.stock = req.body.stock;
       if (req.file) {
-        updatedProduct.image = req.files.map(file => file.path);
+        updatedProduct.image = req.files.map((file) => file.path);
       }
       const newProduct = await updatedProduct.save();
-      console.log(newProduct)
+      console.log(newProduct);
       return res
         .status(200)
-        .json({ message: "brand edited succesfully", newProduct });
-    }
-    catch(err){
-      console.log(err)
+        .json({ message: "Product edited succesfully", newProduct });
+    } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "error" });
     }
   },
-  deleteProduct:async(req,res)=>{
+  deleteProduct: async (req, res) => {
     try {
       const updatedProduct = await Product.findByIdAndDelete({
         _id: req.body._id,
@@ -319,21 +324,18 @@ module.exports = {
       return res.status(500).json({ err: err });
     }
   },
-  getProducts:async(req,res)=>{
-    try
-    {
-      const products=await Product.find().populate("category").populate('brand')
-      if(products)
-      {
-        return res.status(200).json({message:'product get',products})
-      }
-      else
-      {
+  getProducts: async (req, res) => {
+    try {
+      const products = await Product.find()
+        .populate("category")
+        .populate("brand");
+      if (products) {
+        return res.status(200).json({ message: "product get", products });
+      } else {
         res.status(400).json({ message: "not found" });
       }
-    }
-    catch{
+    } catch {
       res.status(500).json({ message: "something went wrong" });
     }
-  }
+  },
 };

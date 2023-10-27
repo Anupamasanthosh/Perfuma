@@ -1,6 +1,9 @@
 const express = require("express");
 require("dotenv").config();
 const User = require("../modals/userModal");
+const Category=require('../modals/categoryModal')
+const Brand=require('../modals/brandModal')
+const Product=require('../modals/productModal')
 const jwt=require('jsonwebtoken')
 const bcrypt = require("bcrypt");
 
@@ -55,4 +58,40 @@ module.exports = {
         res.status(500).json({message:err})
     }
   },
+  getCategory:async(req,res)=>
+  {
+    try
+    {
+      const categories=await Category.find()
+      const brands=await Brand.find()
+      if(brands||categories)
+      {
+        return res.status(200).json({message:'success',brands,categories})
+      }
+      else
+      {
+        res.status(400).json({message:'not get'})
+      }
+    }
+    catch{
+      res.status(500).json({message:'error'})
+    }
+  },
+  getProducts:async (req,res)=>
+  {
+    try{
+      const products=await Product.find().sort({createdAt:-1})
+      if(products)
+      {
+        return res.status(200).json({message:'get',products})
+      }
+      else
+      {
+        return res.status(400).json({message:'not get'})
+      }
+    }
+    catch{
+      return res.status(500).json({message:'error'})
+    }
+  }
 };

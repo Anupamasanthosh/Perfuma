@@ -1,27 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../../../../Utils/axios";
+import { getCategory } from "../../../../Utils/constants";
+import { setBrand, setCategory } from "../../../Redux/HomePageReducer";
 
-function Nav() {
+function Nav({toggleSideNav}) {
   const [token, setToken] = useState();
   const [visible, setVisible] = useState(false);
   const [userInfo, setUserInfo] = useState();
 
   const user = useSelector((state) => state.Auth.User);
+  const category = useSelector((state) => state.Home.Category);
+  const brand = useSelector((state) => state.Home.Brand);
+
+  const dispatch = useDispatch();
   useEffect(() => {
     const tk = localStorage.getItem("token");
-    console.log(tk)
-    if (tk!==null) {
+    if (tk !== null) {
       setToken(tk);
-      console.log(token,'tiken ')
       setUserInfo(user);
     }
-   
   }, [token]);
   const handleLogOut = () => {
     localStorage.clear("token");
     setToken(false);
     setVisible(!visible);
   };
+
+  useEffect(() => {
+    axios.get(getCategory).then((res) => {
+      if (res.data.categories) {
+        dispatch(setCategory(res.data.categories));
+      }
+      if (res.data.brands) {
+        dispatch(setBrand(res.data.brands));
+      }
+    });
+  }, []);
 
   return (
     <div>
@@ -37,7 +52,7 @@ function Nav() {
                 />
               </a>
               <span className="italic text-gray-500  hover:text-black dark:hover:text-black">
-                Perfuma 
+                Perfuma
               </span>
               <div className="hidden md:block">
                 <div className="flex items-baseline ml-10 space-x-4">
@@ -45,20 +60,16 @@ function Nav() {
                     className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
                     href="/#"
                   >
-                    New 
+                    New
                   </a>
-                  <a
-                    className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
-                    href="/#"
-                  >
-                    Women
-                  </a>
-                  <a
-                    className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
-                    href="/#"
-                  >
-                    Men
-                  </a>
+                  {category&& category.map((cat) => (
+                    <a
+                      className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
+                      href="/#"
+                    >
+                      {cat.name}
+                    </a>
+                  ))}
                 </div>
               </div>
             </div>
@@ -96,6 +107,7 @@ function Nav() {
                         className="right-0 mx-5"
                         src="https://img.icons8.com/ios/50/shopping-cart--v1.png"
                         alt="shopping-cart--v1"
+                        onClick={toggleSideNav}
                       />
                     </div>
                     {visible && (
@@ -113,18 +125,15 @@ function Nav() {
                             >
                               New
                             </a>
-                            <a
-                              className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                              href="/#"
-                            >
-                              Women
-                            </a>
-                            <a
-                              className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                              href="/#"
-                            >
-                              Men
-                            </a>
+
+                            {category.map((cat) => (
+                              <a
+                                className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
+                                href="/#"
+                              >
+                                {cat.name}
+                              </a>
+                            ))}
                           </div>
                           <a
                             onClick={handleLogOut}

@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Toolbar } from "primereact/toolbar";
 import { InputText } from "primereact/inputtext";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -11,6 +8,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   addCategory,
   deleteCat,
@@ -24,13 +23,16 @@ import {
   editCategorys,
   setCategorys,
 } from "../../Redux/categoryReducer";
+import { showToastMessage, showToastMessageError } from "../../utils/toast";
+import CategoryHeader from "./CategoryHeader";
+import DataTables from "./DataTables";
 
 function CategoryView() {
   const [category, setCategory] = useState();
   const [categorys, setCategoryss] = useState();
   const [catImage, setCatImage] = useState();
   const [file, setFile] = useState();
-  const [globalFilter, setGlobalFilter] = useState();
+  const [globalFilter, setGlobalFilter] = useState(null);
   const [categoryDialog, setCategoryDialog] = useState(false);
   const [edit, setEdit] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -106,12 +108,14 @@ function CategoryView() {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
-          console.log(res)
           if (res.data.cat) {
             setCategoryDialog(false);
+            showToastMessage(res.data.message);
             setCatImage();
             dispatch(addCategorys(res.data.res));
             setCategory();
+          } else {
+            showToastMessageError(res.data.message);
           }
         });
     } else {
@@ -122,51 +126,28 @@ function CategoryView() {
         .then((res) => {
           if (res.data.newCat) {
             setCategoryDialog(false);
+            showToastMessage(res.data.message);
             dispatch(editCategorys(res.data.newCat));
             setEdit(false);
+          } else {
+            showToastMessageError(res.data.message);
           }
         });
     }
   };
 
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          severity="success"
-          style={{ color: "black", margin: "3px" }}
-          onClick={openNav}
-        />
-        <Button
-          label="Delete"
-          icon="pi pi-trash"
-          style={{ color: "black", margin: "3px" }}
-          severity="danger"
-        />
-      </div>
-    );
-  };
-  const rightToolbarTemplate = () => {
-    return (
-      <span className="p-input-icon-left">
-        <InputText
-          className="p-3"
-          type="search"
-          onInput={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search..."
-        />
-      </span>
-    );
-  };
   const deleteCategory = () => {
     axios
       .post(deleteCat, JSON.stringify(category), {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        setDeleteModal(false);
+        if (res.data.updatedCat) {
+          setDeleteModal(false);
+          showToastMessage(res.data.message);
+        } else {
+          showToastMessageError(res.data.message);
+        }
       });
   };
 
@@ -227,48 +208,18 @@ function CategoryView() {
   };
   return (
     <div className="card mt-5 me-5 ms-5">
-      <Toolbar
-        className="mb-4"
-        left={leftToolbarTemplate}
-        right={rightToolbarTemplate}
-      ></Toolbar>
-      {/* datatable */}
-      <DataTable
-        value={categorys}
-        dataKey="id"
-        paginator
-        rows={10}
-        rowsPerPageOptions={[5, 10, 25]}
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+      <CategoryHeader
+        openNav={openNav}
+        setGlobalFilter={setGlobalFilter}
         globalFilter={globalFilter}
-      >
-        <Column
-          field="name"
-          header="Name"
-          sortable
-          style={{ minWidth: "16rem" }}
-        ></Column>
-
-        <Column
-          header="Action"
-          body={imageBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-        <Column
-          field="description"
-          header="Description"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          header="Action"
-          body={actionBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-      </DataTable>
+      />
+      <ToastContainer />
+      {/* datatable */}
+      <DataTables
+        categorys={categorys}
+        imageBodyTemplate={imageBodyTemplate}
+        actionBodyTemplate={actionBodyTemplate}
+      />
       {/* add Category */}
       <Dialog
         visible={categoryDialog}

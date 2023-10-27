@@ -1,4 +1,4 @@
-import React, { useEffect,useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -10,6 +10,8 @@ import "primeicons/primeicons.css";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "../../utils/axios";
 import {
   addBrand,
@@ -20,7 +22,10 @@ import {
 import { setBrands } from "../../Redux/brandReducer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-  
+import { showToastMessage, showToastMessageError } from "../../utils/toast";
+import BrandHeader from "./BrandHeader";
+import DataTables from "./DataTables";
+
 function BrandDisplay() {
   const [brand, setBrand] = useState({ category: "" });
   const [brands, setbrandss] = useState();
@@ -69,10 +74,10 @@ function BrandDisplay() {
   const handleSubmit = () => {
     if (brand.name && brand.category) {
       const formData = new FormData();
+      console.log(brand)
       formData.append("name", brand.name);
       formData.append("des", brand.description);
       formData.append("image", file);
-      formData.append("id", brand._id);
       if (edit === false) {
         formData.append("cat", brand.category);
         axios
@@ -82,12 +87,16 @@ function BrandDisplay() {
           .then((res) => {
             if (res.data.newBrand) {
               setBrandDialog(false);
+              showToastMessage(res.data.message);
               setBrandImage();
               setBrand();
+            } else {
+              showToastMessageError(res.data.message);
             }
           });
       } else {
-        formData.append("cat", brand.category._id);
+        formData.append("cat", brand.category);
+        formData.append("id", brand._id);
         axios
           .post(editBrand, formData, {
             headers: { "Content-Type": "multipart/form-data" },
@@ -96,7 +105,10 @@ function BrandDisplay() {
             console.log(res);
             if (res.data.newBrand) {
               setBrandDialog(false);
+              showToastMessage(res.data.message);
               setEdit(false);
+            } else {
+              showToastMessageError(res.data.message);
             }
           });
       }
@@ -144,32 +156,19 @@ function BrandDisplay() {
       </React.Fragment>
     );
   };
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          severity="success"
-          style={{ color: "black", margin: "3px" }}
-          onClick={openNav}
-        />
-        <Button
-          label="Delete"
-          icon="pi pi-trash"
-          style={{ color: "black", margin: "3px" }}
-          severity="danger"
-        />
-      </div>
-    );
-  };
+
   const deleteBrands = () => {
     axios
       .post(deleteBrand, JSON.stringify(brand), {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        setDeleteModal(false);
+        if (res.data.updatedBrand) {
+          setDeleteModal(false);
+          showToastMessage(res.data.message);
+        } else {
+          showToastMessageError(res.data.message);
+        }
       });
   };
   const deleteBrandDialogFooter = (
@@ -189,18 +188,6 @@ function BrandDisplay() {
     </React.Fragment>
   );
 
-  const rightToolbarTemplate = () => {
-    return (
-      <span className="p-input-icon-left">
-        <InputText
-          className="p-3"
-          type="search"
-          onInput={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search..."
-        />
-      </span>
-    );
-  };
   const brandDialogFooter = (
     <React.Fragment>
       <Button
@@ -224,53 +211,14 @@ function BrandDisplay() {
   );
   return (
     <div className="card mt-5 me-5 ms-5">
-      <Toolbar
-        className="mb-4"
-        left={leftToolbarTemplate}
-        right={rightToolbarTemplate}
-      ></Toolbar>
+      <BrandHeader openNav={openNav} />
+      <ToastContainer />
       {/* datatable */}
-      <DataTable
-        value={brands}
-        dataKey="id"
-        paginator
-        rows={10}
-        rowsPerPageOptions={[5, 10, 25]}
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-        globalFilter={globalFilter}
-      >
-        <Column
-          field="name"
-          header="Name"
-          sortable
-          style={{ minWidth: "16rem" }}
-        ></Column>
-        <Column
-          header="Image"
-          body={imageBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-        <Column
-          field="category.name"
-          header="Category"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          field="description"
-          header="Description"
-          sortable
-          style={{ minWidth: "10rem" }}
-        ></Column>
-        <Column
-          header="Action"
-          body={actionBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-      </DataTable>
+      <DataTables
+        imageBodyTemplate={imageBodyTemplate}
+        actionBodyTemplate={actionBodyTemplate}
+        brands={brands}
+      />
       {/* add Category */}
       <Dialog
         visible={brandDialog}

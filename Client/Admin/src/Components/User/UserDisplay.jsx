@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../utils/axios";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Toolbar } from "primereact/toolbar";
-import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { blockUser, getUsers, deleteUser } from "../../utils/constants";
+import { showToastMessage, showToastMessageError } from "../../utils/toast";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { editUsers, setUsers } from "../../Redux/userReducer";
-// import primeReact themes
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+import UserHeader from "./UserHeader";
+import DataTables from "./DataTables";
 
 function UserDisplay() {
   const [usersInfo, setUsersInfo] = useState();
   const [globalFilter, setGlobalFilter] = useState(null);
   const [user, setuser] = useState();
   const [dialog, setDialog] = useState(false);
-
   const token = localStorage.getItem("AdminToken");
   const users = useSelector((state) => state.User.Users);
 
@@ -38,7 +34,12 @@ function UserDisplay() {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
-        dispatch(editUsers(res.data.updatedUser));
+        if (res.data.updatedUser) {
+          showToastMessage(res.data.message);
+          dispatch(editUsers(res.data.updatedUser));
+        } else {
+          showToastMessage(res.data.message);
+        }
       });
   };
   // deleting users
@@ -49,7 +50,10 @@ function UserDisplay() {
       })
       .then((res) => {
         if (res.data.updatedUser) {
+          showToastMessage(res.data.message);
           setDialog(false);
+        } else {
+          showToastMessageError(res.data.message);
         }
       });
   };
@@ -79,22 +83,6 @@ function UserDisplay() {
       </React.Fragment>
     );
   };
-
-  //search filter
-  const rightToolbarTemplate = () => {
-    return (
-      <span className="p-input-icon-left">
-        <InputText
-          className="p-3"
-          type="search"
-          onInput={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search..."
-        />
-      </span>
-    );
-  };
-
-  //delete user footer
   const deleteUserDialogFooter = (
     <React.Fragment>
       <Button
@@ -114,32 +102,13 @@ function UserDisplay() {
 
   return (
     <div className="card mt-5 ms-5 me-5">
-      <Toolbar className="mb-4" right={rightToolbarTemplate}></Toolbar>
-      <DataTable
-        value={usersInfo}
-        paginator
-        rows={5}
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        tableStyle={{ minWidth: "50rem" }}
+      <UserHeader setGlobalFilter={setGlobalFilter} />
+      <ToastContainer />
+      <DataTables
+        usersInfo={usersInfo}
         globalFilter={globalFilter}
-        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-      >
-        <Column field="name" header="Name" style={{ width: "25%" }}></Column>
-        <Column field="email" header="Email" style={{ width: "25%" }}></Column>
-        <Column
-          field="blocked"
-          header="Blocked"
-          style={{ width: "25%" }}
-        ></Column>
-        <Column
-          header="Action"
-          body={actionBodyTemplate}
-          exportable={false}
-          style={{ minWidth: "12rem" }}
-        ></Column>
-      </DataTable>
-      {/* delete user */}
+        actionBodyTemplate={actionBodyTemplate}
+      />
       <Dialog
         visible={dialog}
         style={{ width: "32rem" }}

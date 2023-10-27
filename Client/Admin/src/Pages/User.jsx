@@ -25,7 +25,7 @@ function User() {
           <SideNav menu={MenuItems} />
         </div>
         <div className="w-screen xl:w3/4">
-          <UserDisplay/>
+          <UserDisplay />
         </div>
       </div>
     </div>

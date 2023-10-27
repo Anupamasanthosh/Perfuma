@@ -17,7 +17,7 @@ export const MenuItems = [
       link: "/brand",
     },
     {
-      name: "Product Managemwnt",
+      name: "Product Management",
       link: "/products",
     },
   ];
