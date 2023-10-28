@@ -20,7 +20,7 @@ function Home() {
         </div>
       </main>
       <footer className="bg-gray-300 py-4 text-center">
-        &copy; 2023 Your Website Name
+        &copy; 2023 Perfuma
       </footer>
       {open && <SideNav open={open} toggleSideNav={toggleSideNav} />}
     </div>

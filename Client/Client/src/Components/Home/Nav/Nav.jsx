@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../../Utils/axios";
+import { Link } from "react-router-dom";
 import { getCategory } from "../../../../Utils/constants";
 import { setBrand, setCategory } from "../../../Redux/HomePageReducer";
 
-function Nav({toggleSideNav}) {
+function Nav({ toggleSideNav }) {
   const [token, setToken] = useState();
   const [visible, setVisible] = useState(false);
   const [userInfo, setUserInfo] = useState();
 
   const user = useSelector((state) => state.Auth.User);
   const category = useSelector((state) => state.Home.Category);
-  const brand = useSelector((state) => state.Home.Brand);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -58,18 +58,17 @@ function Nav({toggleSideNav}) {
                 <div className="flex items-baseline ml-10 space-x-4">
                   <a
                     className="text-gray-500 italic hover:text-black dark:hover:text-black px-3 py-2 rounded-md text-md "
-                    href="/#"
+                    href="/new"
                   >
                     New
                   </a>
-                  {category&& category.map((cat) => (
-                    <a
-                      className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                      href="/#"
-                    >
-                      {cat.name}
-                    </a>
-                  ))}
+                  {category &&
+                    category.map((cat) => (
+                      <Link
+                        to={`/category/${cat._id}`}
+                        className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base"
+                      >{cat.name}</Link>
+                    ))}
                 </div>
               </div>
             </div>
@@ -121,19 +120,20 @@ function Nav({toggleSideNav}) {
                           <div className="md:hidden">
                             <a
                               className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                              href="/#"
+                              href="/new"
                             >
                               New
                             </a>
 
-                            {category.map((cat) => (
-                              <a
-                                className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                                href="/#"
-                              >
-                                {cat.name}
-                              </a>
-                            ))}
+                            {category &&
+                              category.map((cat) => (
+                                <a
+                                  className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
+                                  href={`/category/${cat._id}`}
+                                >
+                                  {cat.name}
+                                </a>
+                              ))}
                           </div>
                           <a
                             onClick={handleLogOut}

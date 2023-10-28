@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Toolbar } from "primereact/toolbar";
 import { InputText } from "primereact/inputtext";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -30,7 +27,6 @@ function BrandDisplay() {
   const [brand, setBrand] = useState({ category: "" });
   const [brands, setbrandss] = useState();
   const [brandImage, setBrandImage] = useState();
-  const [globalFilter, setGlobalFilter] = useState();
   const [brandDialog, setBrandDialog] = useState(false);
   const [file, setFile] = useState();
   const [edit, setEdit] = useState(false);

@@ -5,7 +5,7 @@ import "react-awesome-slider/dist/styles.css";
 
 function NewArrivals() {
   const productinfo = useSelector((state) => state.Home.Products);
-  const products = productinfo.slice(0, 4);
+  const products = productinfo.slice(0, 6);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
   const [currentIndex, setCurrentIndex] = useState(0);
   const productsPerPage = isSmallScreen ? 1 : 3;
