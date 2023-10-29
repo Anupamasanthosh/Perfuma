@@ -7,7 +7,9 @@ import {
 import Auth from "./Pages/Auth";
 import Home from "./Pages/Home";
 import ProtectedRoute from "../Utils/ProtectedRoutes";
-import Categoryview from "./Components/Home/Center/Categoryview";
+import Brand from "./Pages/Brand";
+import Category from "./Pages/Category";
+import ProductDetails from "./Pages/ProductDetails";
 function App() {
   return (
     <>
@@ -17,7 +19,15 @@ function App() {
           <Route path="/auth" element={<Auth />}></Route>
           <Route
             path="/category/:id"
-            element={<Categoryview/>}
+            element={<Category/>}
+          />
+          <Route
+            path="/brand/:id"
+            element={<Brand />}
+          />
+           <Route
+            path="/product/:id"
+            element={<ProductDetails />}
           />
         </Routes>
       </BrowserRouter>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../../Utils/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCategory } from "../../../../Utils/constants";
 import { setBrand, setCategory } from "../../../Redux/HomePageReducer";
 
@@ -13,6 +13,7 @@ function Nav({ toggleSideNav }) {
   const user = useSelector((state) => state.Auth.User);
   const category = useSelector((state) => state.Home.Category);
 
+  const navigate=useNavigate()
   const dispatch = useDispatch();
   useEffect(() => {
     const tk = localStorage.getItem("token");
@@ -26,6 +27,10 @@ function Nav({ toggleSideNav }) {
     setToken(false);
     setVisible(!visible);
   };
+  const handleNav=(catId)=>
+  {
+    navigate(`/category/${catId}`)
+  }
 
   useEffect(() => {
     axios.get(getCategory).then((res) => {
@@ -64,10 +69,13 @@ function Nav({ toggleSideNav }) {
                   </a>
                   {category &&
                     category.map((cat) => (
-                      <Link
-                        to={`/category/${cat._id}`}
-                        className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base"
-                      >{cat.name}</Link>
+                      <a
+                      key={cat._id}
+                        onClick={() => handleNav(cat._id)}
+                        className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base cursor-pointer"
+                      >
+                        {cat.name}
+                      </a>
                     ))}
                 </div>
               </div>
@@ -110,7 +118,7 @@ function Nav({ toggleSideNav }) {
                       />
                     </div>
                     {visible && (
-                      <div className=" italic absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg dark:bg-white ring-1 ring-black ring-opacity-5">
+                      <div className="italic absolute right-0 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg dark:bg-white ring-1 ring-black ring-opacity-5">
                         <div
                           className="py-1 "
                           role="menu"
@@ -128,8 +136,8 @@ function Nav({ toggleSideNav }) {
                             {category &&
                               category.map((cat) => (
                                 <a
-                                  className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base "
-                                  href={`/category/${cat._id}`}
+                                  className="text-md hover:bg-black hover:text-gray-900 dark:text-gray-500 dark:hover:text-black dark:hover:bg-white block px-4 py-2 rounded-md text-base cursor-pointer "
+                                  onClick={()=>handleNav(cat._id)}
                                 >
                                   {cat.name}
                                 </a>

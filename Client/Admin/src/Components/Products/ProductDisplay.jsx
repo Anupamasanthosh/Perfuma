@@ -41,8 +41,7 @@ function ProductDisplay() {
   const [deleteModal, setDeleteModal] = useState(false);
 
   const token = localStorage.getItem("AdminToken");
-  const categories = useSelector((state) => state.Category.Category);
-  const state = useSelector((state) => console.log(state));
+  const categories = useSelector((state) => state.Category.Category)
   const brands = useSelector((state) => state.Brand.Brand);
   const productinfo = useSelector((state) => state.Product.Products);
   const openNav = () => {
@@ -97,6 +96,7 @@ function ProductDisplay() {
       formData.append("name", product.name);
       formData.append("des", product.description);
       formData.append("stock", product.stock);
+      formData.append("price",product.price)
       for (let i = 0; i < file.length; i++) {
         formData.append("image", file[i]);
       }
@@ -365,6 +365,20 @@ function ProductDisplay() {
             required
             rows={3}
             cols={20}
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="name" className="font-bold p-3">
+            Price
+          </label>
+          <InputText
+            id="price"
+            name="price"
+            value={product ? product.price : ""}
+            onChange={handleChange}
+            required
+            autoFocus
+            className="p-3"
           />
         </div>
         <div className="field">

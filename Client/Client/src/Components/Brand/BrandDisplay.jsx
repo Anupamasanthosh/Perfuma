@@ -1,16 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
 import { FaPlus } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
-function Category1({ products }) {
+function BrandDisplay({product}) {
+    console.log(product)
   return (
     <div>
       <div className="border border-[#e4e4e4] h-[300px] mb-4 relative overflow-hidden group transition">
         <div className="w-full h-full flex justify-center items-center">
           <div className="w-[200px] mx-auto flex justify-center items-center">
             <img
-              src={products.image[0]}
+              src={product.image[0]}
               alt=""
               className="max-h-[160px] group-hover:scale-110 transition duration-300"
             />
@@ -23,7 +24,7 @@ function Category1({ products }) {
             </div>
           </button>
           <Link
-            to={`/product/${products._id}`}
+            to={`/product/${product._id}`}
             className="w-12 h-12 bg-white flex justify-center items-center text-primary drop-shadow-xl"
           >
             <FaEye className="text-xl" />
@@ -32,17 +33,17 @@ function Category1({ products }) {
       </div>
       <div>
       <div className="font-semibold capitalize text-gray-500 mb-1">
-        {products.name}
+        {product.name}
       </div>
       <h2 className="text-sm mb-1">
-        {products.description}
+        {product.description}
       </h2>
       <div className="font-semibold">
-        $ {products.price}
+        $ {product.price}
       </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Category1;
+export default BrandDisplay

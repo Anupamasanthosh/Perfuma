@@ -266,6 +266,7 @@ module.exports = {
         description: req.body.des,
         category: categoryName._id,
         brand: brandName._id,
+        price:req.body.price,
         stock: req.body.stock,
       };
       if (req.files) {
@@ -296,6 +297,7 @@ module.exports = {
       updatedProduct.description = req.body.des;
       updatedProduct.category = req.body.cat;
       updatedProduct.brand = req.body.brand;
+      updatedProduct.price=req.body.price
       updatedProduct.stock = req.body.stock;
       if (req.file) {
         updatedProduct.image = req.files.map((file) => file.path);

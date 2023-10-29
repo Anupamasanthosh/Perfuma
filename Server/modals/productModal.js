@@ -13,6 +13,7 @@ const Products=new mongoose.Schema(
             type: Date,
             default: Date.now
           },
+          price:{type:Number,required:true},
         stock:{type:Number,required:true}
     },{
         collection:'Products'

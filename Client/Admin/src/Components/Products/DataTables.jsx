@@ -50,6 +50,12 @@ function DataTables({
         style={{ minWidth: "10rem" }}
       ></Column>
       <Column
+        field="price"
+        header="price"
+        sortable
+        style={{ minWidth: "16rem" }}
+      ></Column>
+      <Column
         field="stock"
         header="Stock"
         sortable

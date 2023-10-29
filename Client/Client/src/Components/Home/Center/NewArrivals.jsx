@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AwesomeSlider from "react-awesome-slider";
 import "react-awesome-slider/dist/styles.css";
+import { useNavigate } from "react-router-dom";
 
 function NewArrivals() {
   const productinfo = useSelector((state) => state.Home.Products);
@@ -10,11 +11,17 @@ function NewArrivals() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const productsPerPage = isSmallScreen ? 1 : 3;
 
+  const navigate=useNavigate()
+
   const handleNext = () => {
     if (currentIndex + productsPerPage < products.length) {
       setCurrentIndex(currentIndex + productsPerPage);
     }
   };
+
+  const handleProduct=(productId)=>{
+    navigate(`/product/${productId}`)
+  }
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -42,7 +49,7 @@ function NewArrivals() {
             {products.map((product) => (
               <div key={product._id} className="relative">
                 <img
-                  className="w-48 h-48 transform ease-in-out transition duration-150 hover:scale-110 hover:z-10"
+                  className="w-48 h-48 transform ease-in-out transition duration-150 hover:scale-110 hover:z-10 cursor-pointer"
                   src={product.image}
                   alt="Product"
                 />
@@ -66,6 +73,7 @@ function NewArrivals() {
                     <img
                       className="w-48 h-48 mx-auto  rounded-full"
                       src={product.image[0]}
+                      onClick={()=>handleProduct(product._id)}
                       alt="Product"
                     />
                   </div>
