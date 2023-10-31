@@ -18,7 +18,7 @@ function CategoryVise() {
     <div className="py-16">
       <div className="container mx-auto">
         {category.map((category) => (
-          <div>
+          <div key={category._id}>
             <div
               className="flex justify-between items-center text-[30px] leading-[1.1] font-light pb-6"
               key={category._id}
@@ -31,7 +31,7 @@ function CategoryVise() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-[30px]">
               {filteredProducts[category._id].slice(0, 4).map((product) => (
-                <Category1 products={product} />
+                <Category1 products={product} key={product._id}/>
               ))}
             </div>
           </div>

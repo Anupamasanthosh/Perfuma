@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Nav from "../Components/Home/Nav/Nav";
 import SideNav from "../Components/Home/Nav/SideNav";
-import Hero from "../Components/Home/Hero/Hero";
-import Center from "../Components/Home/Center/Center";
+import PaymentInfo from "../Components/Payment/PaymentInfo";
 
-function Home() {
+function Payment() {
   const [open, setOpen] = useState(false);
   const toggleSideNav = () => {
     setOpen(!open);
@@ -15,10 +14,12 @@ function Home() {
       <header>
         <Nav toggleSideNav={toggleSideNav} />
       </header>
-      <main className="flex-1 overflow-y-auto">
-        <Hero />
-        <div className="container mx-auto p-4">
-          <Center />
+      <main className="flex-1 overflow-y-auto container px-5 py-5">
+        <div className="flex px-5 py-5 justify-center items-center text-xl font-semibold capitalize">
+            payment Details
+        </div>
+        <div>
+          <PaymentInfo />
         </div>
       </main>
       <footer className="bg-gray-300 py-4 text-center">
@@ -29,4 +30,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Payment;

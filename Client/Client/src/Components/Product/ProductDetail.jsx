@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReactImageMagnify from "react-image-magnify";
+
 
 function ProductDetail({ product }) {
   const [images, setImages] = useState(product.image);

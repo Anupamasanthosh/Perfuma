@@ -16,3 +16,4 @@ export const addProduct='/addProducts'
 export const getproducts='/getProducts'
 export const editproduct='/editproduct'
 export const deleteProducts='/deleteProduct'
+

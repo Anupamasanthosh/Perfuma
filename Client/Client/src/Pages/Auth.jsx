@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import Form from "../Components/Auth/Form";
 import axios from "../../Utils/axios";
-import { loginPost, signUpPost } from "../../Utils/constants";
+import { loginPost, signUpPost} from "../../Utils/constants";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { showToastMessage, showToastMessageError } from "../../Utils/toastMsg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../Redux/AuthReducer";
-
 function Auth() {
   const [userData, setUserData] = useState();
   const [signUp, setSignUp] = useState(false);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
+
   const onSubmit = () => {
     if (signUp) {
       axios

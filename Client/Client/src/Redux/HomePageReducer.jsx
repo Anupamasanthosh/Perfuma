@@ -5,7 +5,7 @@ const HomePageSlice=createSlice({
     initialState:{
         Category:[],
         Brand:[],
-        Products:[]
+        Products:[],
     },
     reducers:{
         setCategory:(state,action)=>
@@ -19,7 +19,7 @@ const HomePageSlice=createSlice({
         addProducts:(state,action)=>
         {
             state.Products=action.payload
-        }
+        },
     }
 })
 

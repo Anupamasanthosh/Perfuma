@@ -44,7 +44,7 @@ function Category() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-[30px]">
             {filteredProducts.map((product) => (
-              <Category1 products={product} />
+              <Category1 products={product} key={product._id} />
             ))}
           </div>
         </div>

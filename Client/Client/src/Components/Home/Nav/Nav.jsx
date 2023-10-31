@@ -4,13 +4,14 @@ import axios from "../../../../Utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { getCategory } from "../../../../Utils/constants";
 import { setBrand, setCategory } from "../../../Redux/HomePageReducer";
+import { clearUser } from "../../../Redux/AuthReducer";
 
 function Nav({ toggleSideNav }) {
   const [token, setToken] = useState();
   const [visible, setVisible] = useState(false);
   const [userInfo, setUserInfo] = useState();
 
-  const user = useSelector((state) => state.Auth.User);
+  const user = useSelector((state) => state.Auth.User); 
   const category = useSelector((state) => state.Home.Category);
 
   const navigate=useNavigate()
@@ -24,6 +25,7 @@ function Nav({ toggleSideNav }) {
   }, [token]);
   const handleLogOut = () => {
     localStorage.clear("token");
+    dispatch(clearUser())
     setToken(false);
     setVisible(!visible);
   };

@@ -10,6 +10,7 @@ import ProtectedRoute from "../Utils/ProtectedRoutes";
 import Brand from "./Pages/Brand";
 import Category from "./Pages/Category";
 import ProductDetails from "./Pages/ProductDetails";
+import Payment from "./Pages/Payment";
 function App() {
   return (
     <>
@@ -28,6 +29,10 @@ function App() {
            <Route
             path="/product/:id"
             element={<ProductDetails />}
+          />
+          <Route
+            path="/payment"
+            element={<Payment />}
           />
         </Routes>
       </BrowserRouter>

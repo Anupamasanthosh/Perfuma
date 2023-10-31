@@ -10,28 +10,28 @@ function Brandvise() {
     navigate(`/brand/${brandId}`)
   };
   return (
-    <div class="p-8 bg-white rounded-lg ">
-      <p class="text-3xl font-bold text-center text-black">Shop By Brand</p>
-      <p class="mb-12 text-xl font-normal text-center text-gray-500 dark:text-gray-300">
+    <div className="p-8 bg-white rounded-lg ">
+      <p className="text-3xl font-bold text-center text-black">Shop By Brand</p>
+      <p className="mb-12 text-xl font-normal text-center text-gray-500 dark:text-gray-300">
         Meat the best team in wolrd
       </p>
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {brands.map((brand) => (
-          <div class="p-4">
-            <div class="flex-col  flex justify-center items-center">
-              <div class="flex-shrink-0">
-                <a href="#" class="relative block">
+          <div className="p-4" key={brand._id}>
+            <div className="flex-col  flex justify-center items-center">
+              <div className="flex-shrink-0">
+                <a href="#" className="relative block">
                   <img
                     alt="profil"
                     src={brand.image}
-                    class="mx-auto  rounded-full h-20 w-30 object-fill "
+                    className="mx-auto  rounded-full h-20 w-30 object-fill "
                     onClick={() => handleBrand(brand._id)}
                   />
                 </a>
               </div>
-              <div class="mt-2 text-center flex flex-col">
+              <div className="mt-2 text-center flex flex-col">
                 <a
-                  class="text-xs text-gray-400 cursor-pointer"
+                  className="text-xs text-gray-400 cursor-pointer"
                   onClick={() => handleBrand(brand._id)}
                 >
                   Explore
