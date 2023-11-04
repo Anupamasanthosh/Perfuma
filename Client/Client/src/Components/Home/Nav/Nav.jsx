@@ -83,11 +83,11 @@ function Nav({ toggleSideNav }) {
               </div>
             </div>
             <div className="block">
-              <div className="flex items-center ml-4 md:ml-6">
+              <div className="flex items-center ml-4 md:ml-6"> 
                 <div className="relative ml-3">
                   <div className="relative inline-block text-left">
                     <div className="flex items-center">
-                      {token ? (
+                      {user ? (
                         <button
                           type="button"
                           className="  flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm  text-gray-500 dark:text-gray-50"

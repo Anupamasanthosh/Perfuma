@@ -1,20 +1,24 @@
 import React, { useState } from "react";
 
-
 function ProductDetail({ product }) {
   const [images, setImages] = useState(product.image);
   const [activeImage, setActiveImage] = useState(images[0]);
   return (
-    <div className='flex flex-col lg:flex-row gap-16 lg:items-center'>
+    <div className="flex flex-col lg:flex-row gap-16 lg:items-center">
       <div className="flex flex-wrap gap-6 lg:w-2/4">
         <img
           src={activeImage}
           alt=""
-          className='w-[560px] aspect-square object-cover rounded-xl'
+          className="w-[560px] aspect-square object-cover rounded-xl"
         />
         <div className="flex flex-row justify-between">
           {images.map((image) => (
-            <img src={image} alt="" className='w-24 h-24 p-4 rounded-md cursor-pointer' onClick={() => setActiveImage(image)} />
+            <img
+              src={image}
+              alt=""
+              className="w-24 h-24 p-4 rounded-md cursor-pointer"
+              onClick={() => setActiveImage(image)}
+            />
           ))}
         </div>
       </div>

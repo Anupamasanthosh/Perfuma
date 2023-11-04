@@ -15,7 +15,7 @@ function SideNav({ open, toggleSideNav }) {
   let totalAmount = 0;
 
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     if (user) {
       axios.get(`${cartGet}?user=${user._id}`).then((res) => {
@@ -55,10 +55,9 @@ function SideNav({ open, toggleSideNav }) {
         }
       });
   };
-  const handlePayment=()=>
-  {
-    navigate('/payment')
-  }
+  const handlePayment = () => {
+    navigate("/payment");
+  };
   return (
     <div
       className={`${
@@ -81,24 +80,29 @@ function SideNav({ open, toggleSideNav }) {
           return <Cart item={cart} user={user} key={index} />;
         })}
       </div>
-      <div className="flex flex-col gap-y-3 py-4 mt-4">
-        <div className="flex w-full justify-between items-center">
-          <div className="uppercase font-semibold">
-            <span className="mr-2">Total:</span>$ {totalAmount}
+      {cart.length ? (
+        <div className="flex flex-col gap-y-3 py-4 mt-4">
+          <div className="flex w-full justify-between items-center">
+            <div className="uppercase font-semibold">
+              <span className="mr-2">Total:</span>$ {totalAmount}
+            </div>
+            <div className="cursor-pointer py-4 text-white w-12 h-12 flex justify-center items-center text-xl">
+              <GrFormTrash onClick={handleDelete} />
+            </div>
           </div>
-          <div className="cursor-pointer py-4 text-white w-12 h-12 flex justify-center items-center text-xl">
-            <GrFormTrash onClick={handleDelete} />
+
+          <div className="flex justify-center items-center">
+            <button
+              className="bg-gray-600 text-white py-2 px-4 rounded-md w-[200px]"
+              onClick={handlePayment}
+            >
+              Proceed to Payment
+            </button>
           </div>
         </div>
-        <div className="flex justify-center items-center">
-        <button
-          className="bg-gray-600 text-white py-2 px-4 rounded-md w-[200px]"
-          onClick={handlePayment}
-        >
-          Proceed to Payment
-        </button>
-        </div>
-      </div>
+      ) : (
+        <div className="flex justify-center px-5 py-5">Add items to Cart</div>
+      )}
     </div>
   );
 }

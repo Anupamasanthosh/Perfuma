@@ -227,4 +227,69 @@ module.exports = {
       }
     } catch {}
   },
+  addAddress: async (req, res) => {
+    try {
+      const { state, city, street, post } = req.body;
+      const userExist = await User.findById({ _id: req.body.user });
+      if (!userExist) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const newAddress = {
+        state,
+        city,
+        street,
+        post,
+      };
+      userExist.address.push(newAddress);
+      const newUser = await userExist.save();
+      if (newUser) {
+        return res.status(200).json({ message: "addded", newUser });
+      } else {
+        return res.status(400).json({ message: "not added" });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  editAddress: async (req, res) => {
+    try {
+      console.log(req.body);
+      const edited = await User.findOneAndUpdate(
+        { _id: req.body.user, "address._id": req.body.address },
+        {
+          $set: {
+            "address.$.street": req.body.street,
+            "address.$.city": req.body.city,
+            "address.$.state": req.body.state,
+            "address.$.post": req.body.post,
+          },
+        },
+        { new: true }
+      );
+      if (edited) {
+        return res.status(200).json({ newUser: edited });
+      } else {
+        return res.status(400).json({ message: "not edited" });
+      }
+    } catch (err) {}
+  },
+  deleteAddress: async (req, res) => {
+    try {
+      console.log(req.body);
+      const user = await User.findOneAndUpdate(
+        { _id: req.body.user },
+        {
+          $pull: { address: { _id: req.body.id } },
+        },
+        { new: true }
+      );
+      if (user) {
+        return res.status(200).json({ message: "deleted", user });
+      }
+      else
+      {
+        return res.status(400).json({message:'not deleted'})
+      }
+    } catch (err) {}
+  },
 };

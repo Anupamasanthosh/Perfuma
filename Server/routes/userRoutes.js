@@ -11,7 +11,10 @@ const { signUp,
     deleteCart,
     deleteItem,
     addQuantity,
-    minusQuantity
+    minusQuantity,
+    addAddress,
+    editAddress,
+    deleteAddress
  } = require("../controllers/userController");
 
 router.post("/signUp", signUp);
@@ -25,5 +28,8 @@ router.post('/deleteCart',deleteCart)
 router.post('/deleteItem',deleteItem)
 router.post('/addQuantity',addQuantity)
 router.post('/minusQuantity',minusQuantity)
+router.post('/addAddress',addAddress)
+router.post('/editAddress',editAddress)
+router.post('/deleteAddress',deleteAddress)
 
 module.exports = router;
