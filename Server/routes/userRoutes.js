@@ -14,7 +14,8 @@ const { signUp,
     minusQuantity,
     addAddress,
     editAddress,
-    deleteAddress
+    deleteAddress,
+    proceedOrder
  } = require("../controllers/userController");
 
 router.post("/signUp", signUp);
@@ -31,5 +32,6 @@ router.post('/minusQuantity',minusQuantity)
 router.post('/addAddress',addAddress)
 router.post('/editAddress',editAddress)
 router.post('/deleteAddress',deleteAddress)
+router.post('/proceedOrder',proceedOrder)
 
 module.exports = router;

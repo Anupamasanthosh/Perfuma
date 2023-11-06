@@ -8,6 +8,8 @@ import {
   editAddress,
 } from "../../../Utils/constants";
 import { updateUser } from "../../Redux/AuthReducer";
+import { ToastContainer, toast } from "react-toastify";
+import { showToastMessageError } from "../../../Utils/toastMsg";
 
 function Address({ setSelectedAddress }) {
   const [show, setShow] = useState(false);
@@ -23,7 +25,8 @@ function Address({ setSelectedAddress }) {
   };
 
   const validateInput = () => {
-    const errors = {};
+    console.log("hey");
+    let errors = {};
     if (!address.street) {
       errors.street = "Street is required";
     }
@@ -39,7 +42,6 @@ function Address({ setSelectedAddress }) {
       errors.post = "post must be a number";
     }
     setValidationErrors(errors);
-
     return Object.keys(errors).length === 0;
   };
 
@@ -75,7 +77,7 @@ function Address({ setSelectedAddress }) {
         .then((res) => {
           if (res.data.newUser) {
             dispatch(updateUser(res.data.newUser));
-            setEdit(false)
+            setEdit(false);
             setAddress();
             setShow(!show);
           }
@@ -84,6 +86,7 @@ function Address({ setSelectedAddress }) {
   };
   return (
     <section className="h-auto">
+      <ToastContainer />
       {user.address.length !== 0 && !edit ? (
         <div className="p-4 rounded-lg bg-gray-100/5">
           {user.address.map((address, index) => (

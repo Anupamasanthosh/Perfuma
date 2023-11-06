@@ -5,6 +5,7 @@ const Category = require("../modals/categoryModal");
 const Brand = require("../modals/brandModal");
 const Product = require("../modals/productModal");
 const Cart = require("../modals/cartModal");
+const Order = require("../modals/orderModal");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -285,11 +286,40 @@ module.exports = {
       );
       if (user) {
         return res.status(200).json({ message: "deleted", user });
-      }
-      else
-      {
-        return res.status(400).json({message:'not deleted'})
+      } else {
+        return res.status(400).json({ message: "not deleted" });
       }
     } catch (err) {}
+  },
+  proceedOrder: async (req, res) => {
+    try {
+      const user = await User.findById({ _id: req.body.user });
+      if (user) {
+        const cartItems = await Cart.findOne({ user: req.body.user });
+        if (cartItems) {
+          const orderProducts = cartItems.products.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+          }));
+          const newOrder = {
+            user: req.body.user,
+            products: orderProducts,
+            address: req.body.address,
+          };
+          const order = await Order.create(newOrder);
+          if (order) {
+            const newCart = await Cart.deleteOne({ user: req.body.user });
+            console.log(newCart);
+            return res
+              .status(200)
+              .json({ message: "order created and cart deleted" ,newOrder});
+          } else {
+            return res.status(400).json({ message: "not created" });
+          }
+        }
+      }
+    } catch {
+       
+    }
   },
 };

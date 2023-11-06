@@ -3,8 +3,8 @@ import Address from "./Address";
 import CartItems from "./CartItems";
 import { useSelector } from "react-redux";
 
-function PaymentInfo() {
-  const [selectedAddress, setSelectedAddress] = useState();
+function PaymentInfo({setSelectedAddress}) {
+  
   const [fullCart, setFullCart] = useState(false);
 
   const cart = useSelector((state) => state.Cart.Cart);
@@ -26,7 +26,7 @@ function PaymentInfo() {
     };
   });
 
-  const slicedCart = cartItemsWithDetails.slice(0, 2);
+  const slicedCart = cartItemsWithDetails.slice(0, 1);
   console.log(slicedCart, "sclied");
 
   return (
@@ -34,9 +34,10 @@ function PaymentInfo() {
       <div className="">
         <Address setSelectedAddress={setSelectedAddress} />
       </div>
-      <div className="bg-green-600">
-        <div className="flex flex-col items-center justify-center w-full h-auto mx-auto bg-white rounded-lg shadow ">
-          <ul className="container flex flex-col divide-y divide w-full overflow-y-auto h-[400px] scroll-snap-y-start">
+      <div className="">
+        <div className="text-center">Order Details</div>
+        <div class="col-span-1 bg-white lg:block hidden">
+          <ul class="py-6 border-b space-y-6 px-8 overflow-y-auto overflow-x-hidden h-[220px] scroll-snap-y-start">
             {fullCart
               ? cartItemsWithDetails.map((cart, index) => (
                   <CartItems cartItems={cart} key={index} />
@@ -44,11 +45,26 @@ function PaymentInfo() {
               : slicedCart.map((cart, index) => (
                   <CartItems cartItems={cart} key={index} />
                 ))}
-            {cartItemsWithDetails.length>2 && <button onClick={() => setFullCart(!fullCart)}>
-              {fullCart ? "Hide" : "More"}
-            </button>
-              }
+            {cartItemsWithDetails.length > 1 && (
+              <button onClick={() => setFullCart(!fullCart)}>
+                {fullCart ? "Hide" : "More"}
+              </button>
+            )}
           </ul>
+          <div class="px-8 border-b">
+            <div class="flex justify-between py-4 text-gray-600">
+              <span>Subtotal</span>
+              <span class="font-semibold text-pink-500">€{totalAmount}</span>
+            </div>
+            <div class="flex justify-between py-4 text-gray-600">
+              <span>Shipping</span>
+              <span class="font-semibold text-pink-500">Free</span>
+            </div>
+          </div>
+          <div class="font-semibold text-xl px-8 flex justify-between py-8 text-gray-600">
+            <span>Total</span>
+            <span>€{totalAmount}</span>
+          </div>
         </div>
       </div>
     </div>
